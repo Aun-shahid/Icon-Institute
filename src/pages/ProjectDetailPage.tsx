@@ -6,13 +6,11 @@ import {
   sampleProjects,
   type SampleProject,
 } from '../data/projects';
-import { PageHero } from '../components/PageHero';
 import { PlaceholderImage } from '../components/PlaceholderImage';
 import { Seo } from '../components/Seo';
 import { siteSeo } from '../data/seo';
 import { getPublished } from '../hooks/usePublished';
 import { assetUrl } from '../lib/api';
-import { expertiseHubCards } from '../data/expertise';
 import {
   BankIcon,
   BriefcaseIcon,
@@ -114,9 +112,6 @@ export function ProjectDetailPage() {
 
   const region = projectRegions.find((r) => r.slug === project.region);
   const expertiseLabel = expertiseLabels[project.expertise] ?? project.expertise;
-  const expertiseImage =
-    project.image ??
-    expertiseHubCards.find((card) => card.slug === project.expertise)?.image;
   const body = project.body?.filter((p) => p.trim()) ?? [];
   const paragraphs = body.length > 0 ? body : [project.description];
   const countries = project.countries?.length
@@ -146,13 +141,6 @@ export function ProjectDetailPage() {
         }}
       />
 
-      <PageHero
-        title={project.title}
-        compact
-        image={project.image}
-        imageAlt={project.title}
-      />
-
       <section className="content-section">
         <div className="container">
           <p className="back-link">
@@ -168,20 +156,10 @@ export function ProjectDetailPage() {
           <div className="project-detail__grid">
             <article className="project-detail__main">
               <header className="project-detail__header">
-                {expertiseImage && (
-                  <PlaceholderImage
-                    src={expertiseImage}
-                    alt=""
-                    className="project-detail__expertise-image"
-                    aspectRatio="1 / 1"
-                  />
+                <h1>{project.title}</h1>
+                {project.subtitle && (
+                  <p className="project-detail__subtitle">{project.subtitle}</p>
                 )}
-                <div>
-                  <h2>{project.title}</h2>
-                  {project.subtitle && (
-                    <p className="project-detail__subtitle">{project.subtitle}</p>
-                  )}
-                </div>
               </header>
 
               {project.image && (

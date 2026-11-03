@@ -7,8 +7,6 @@ import {
   sampleProjects as bundledProjects,
   type SampleProject,
 } from '../data/projects';
-import { homePage as bundledHome, type HomePage as HomeData } from '../data/home';
-import { PageHero } from '../components/PageHero';
 import { ProjectCard } from '../components/ProjectCard';
 import { Seo } from '../components/Seo';
 import { pageSeo } from '../data/seo';
@@ -20,10 +18,6 @@ export function ProjectsPage() {
   // The published project catalogue, maintained through the CMS Projects
   // Manager. Filtering and search still run entirely in the browser.
   const sampleProjects = usePublished<SampleProject[]>('/projects', bundledProjects);
-  const home = usePublished<HomeData>('/pages/home', bundledHome);
-  // Reuse the published home "Projects Worldwide" image (CMS `/media/...`) so
-  // the map is not stuck on a missing local `/images/icon_projects.jpg`.
-  const mapImage = home.projectsWorldwide.image || 'icon_projects.jpg';
   const [query, setQuery] = useState('');
   const [region, setRegion] = useState('');
   const [recent, setRecent] = useState('');
@@ -66,14 +60,9 @@ export function ProjectsPage() {
   return (
     <div className="projects-page">
       <Seo {...pageSeo.projects} />
-      <PageHero
-        title="Projects"
-        image={mapImage}
-        imageAlt="ICON projects worldwide"
-      />
-
       <section className="content-section">
         <div className="container">
+          <h1 className="sr-only">Projects</h1>
           <p className="lede">{projectsPage.intro}</p>
 
           <div className="projects-map">

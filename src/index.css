@@ -925,6 +925,49 @@ code {
   opacity: 1;
 }
 
+/* Jobs banner: anchor the crop near the top so the faces stay in frame at
+   every width instead of being cut by the default centred crop. */
+.jobs-page .page-hero__img {
+  object-position: center 18%;
+}
+
+/* Projects listing and detail have no hero, so tighten the gap under the
+   site header. */
+.projects-page > .content-section:first-of-type,
+.project-detail > .content-section:first-of-type {
+  padding-top: 3rem;
+}
+
+/* News article: the featured image is the headline backdrop, with a soft
+   gradient for legibility. Articles without an image keep the dark hero. */
+.news-detail .page-hero:has(.page-hero__media) {
+  min-height: 380px;
+  align-items: flex-end;
+}
+
+.news-detail .page-hero__overlay {
+  display: block;
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.75) 0%,
+    rgba(0, 0, 0, 0.35) 55%,
+    rgba(0, 0, 0, 0.15) 100%
+  );
+}
+
+.news-detail .page-hero h1 {
+  max-width: 30ch;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.35);
+}
+
+@media (max-width: 640px) {
+  .news-detail .page-hero:has(.page-hero__media) {
+    min-height: 260px;
+  }
+}
+
 .page-hero__overlay {
   display: none;
 }
@@ -5906,9 +5949,6 @@ a, a:hover { color: #861a14; }
 }
 
 .project-detail__header {
-  display: flex;
-  gap: 1rem;
-  align-items: flex-start;
   margin-bottom: 1.5rem;
 }
 
@@ -5918,16 +5958,7 @@ a, a:hover { color: #861a14; }
   height: 3rem;
 }
 
-.project-detail__expertise-image,
-.project-detail__expertise-image.img-placeholder {
-  flex-shrink: 0;
-  width: 3rem;
-  height: 3rem;
-  object-fit: cover;
-  border-radius: var(--radius-sm);
-}
-
-.project-detail__header h2 {
+.project-detail__header h1 {
   margin: 0 0 0.4rem;
   font-size: 1.6rem;
   line-height: 1.25;

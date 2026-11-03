@@ -1,7 +1,6 @@
 import { Link, useParams } from 'react-router-dom';
 import { newsItems as bundledNews, type NewsItem } from '../data/news';
 import { PageHero } from '../components/PageHero';
-import { PlaceholderImage } from '../components/PlaceholderImage';
 import { RichParagraphs } from '../components/RichText';
 import { Seo } from '../components/Seo';
 import { siteSeo } from '../data/seo';
@@ -81,7 +80,9 @@ export function NewsDetailPage() {
           },
         }}
       />
-      <PageHero title={item.title} compact />
+      {/* The article's own featured image sits behind the headline; without
+          one the hero keeps its plain dark background. */}
+      <PageHero title={item.title} compact image={item.image} />
 
       <section className="content-section">
         <div className="container narrow">
@@ -94,12 +95,6 @@ export function NewsDetailPage() {
               </>
             )}
           </p>
-
-          <PlaceholderImage
-            src={item.image ?? 'news-placeholder.jpg'}
-            alt={item.title}
-            className="news-detail__img"
-          />
 
           {item.excerpt && <p className="news-detail__lead">{item.excerpt}</p>}
 
