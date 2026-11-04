@@ -130,7 +130,8 @@ export function AdminDashboard() {
           <BarList
             caption="Projects by region"
             data={(data?.projects_by_region ?? []).map((d) => ({
-              label: REGION_LABELS[d.label] ?? d.label,
+              // Projects may have no region (multi-region / worldwide).
+              label: d.label ? (REGION_LABELS[d.label] ?? d.label) : 'No region',
               value: d.value,
             }))}
           />

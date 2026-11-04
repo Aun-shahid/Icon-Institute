@@ -28,7 +28,8 @@ export type SampleProject = {
   /** Joined display string, kept in step with `countries` by the CMS. */
   country: string;
   countries?: string[];
-  region: string;
+  /** Optional — absent for multi-region or worldwide projects. */
+  region?: string | null;
   yearStart: number;
   yearEnd: number;
   /** Exact running period when known, e.g. 2025-12-01. */

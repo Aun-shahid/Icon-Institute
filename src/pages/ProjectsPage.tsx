@@ -36,7 +36,7 @@ export function ProjectsPage() {
       if (expertise && p.expertise !== expertise) return false;
       if (volume && p.volume !== volume) return false;
       if (q) {
-        const hay = `${p.title} ${p.country} ${p.description} ${p.region}`.toLowerCase();
+        const hay = `${p.title} ${p.country} ${p.description} ${p.region ?? ''}`.toLowerCase();
         if (!hay.includes(q)) return false;
       }
       return true;

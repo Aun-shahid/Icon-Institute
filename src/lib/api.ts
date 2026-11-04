@@ -149,7 +149,7 @@ export type NewsItem = CmsEnvelope & {
 export type JobItem = CmsEnvelope & {
   title: string;
   location: string;
-  type: 'Permanent' | 'Short-term expert' | 'Freelance';
+  type: 'Permanent' | 'Short-term expert' | 'Long-term' | 'Freelance';
   expertise: string;
   published: string;
   deadline: string;
@@ -166,7 +166,8 @@ export type ProjectItem = CmsEnvelope & {
   /** Joined display string, derived from `countries` by the backend. */
   country: string;
   countries: string[];
-  region: string;
+  /** Optional — absent for multi-region or worldwide projects. */
+  region: string | null;
   yearStart: number;
   yearEnd: number;
   periodStart: string | null;
@@ -300,7 +301,7 @@ export type ApplicationRecord = {
 export type DashboardData = {
   totals: Record<string, number>;
   by_status: Record<string, Record<string, number>>;
-  projects_by_region: { label: string; value: number }[];
+  projects_by_region: { label: string | null; value: number }[];
   projects_by_expertise: { label: string; value: number }[];
   news_by_year: { label: string; value: number }[];
   workflow_queue: Record<string, number>;

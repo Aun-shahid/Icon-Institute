@@ -490,6 +490,9 @@ export function VersionsDialog<T extends CmsEnvelope>({
 
 /* ----------------------------------------------------------- media picker */
 
+/** Files fetched per "page" of the picker (the API allows up to 100). */
+const PICKER_PAGE_SIZE = 60;
+
 export function MediaPickerDialog({
   onSelect,
   onClose,
@@ -502,21 +505,57 @@ export function MediaPickerDialog({
   const [search, setSearch] = useState('');
   const [rows, setRows] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [total, setTotal] = useState(0);
+  // Identifies the current search; responses for an older one are dropped.
+  const requestKey = useRef(0);
 
-  const load = useCallback(() => {
-    setLoading(true);
-    api.media
-      .list({ search: search || undefined, type: kind, page_size: 60 })
-      .then((r) => setRows(r.items))
-      .catch((err: unknown) => setError(errorText(err)))
-      .finally(() => setLoading(false));
-  }, [search, kind]);
+  /**
+   * The library API is paginated (max 100 per page), so the picker loads it
+   * one page at a time and appends — every file stays reachable via
+   * "Load more" without fetching the whole library up front.
+   */
+  const fetchPage = useCallback(
+    (nextPage: number, key: number) =>
+      api.media
+        .list({ search: search || undefined, type: kind, page: nextPage, page_size: PICKER_PAGE_SIZE })
+        .then((r) => {
+          if (key !== requestKey.current) return;
+          setRows((prev) => {
+            if (nextPage === 1) return r.items;
+            const seen = new Set(prev.map((m) => m.id));
+            return [...prev, ...r.items.filter((m) => !seen.has(m.id))];
+          });
+          setPage(nextPage);
+          setTotalPages(r.total_pages);
+          setTotal(r.total);
+        })
+        .catch((err: unknown) => {
+          if (key === requestKey.current) setError(errorText(err));
+        }),
+    [search, kind]
+  );
 
   useEffect(() => {
-    load();
-  }, [load]);
+    const key = ++requestKey.current;
+    setLoading(true);
+    setError('');
+    void fetchPage(1, key).finally(() => {
+      if (key === requestKey.current) setLoading(false);
+    });
+  }, [fetchPage]);
+
+  const loadMore = () => {
+    const key = requestKey.current;
+    setLoadingMore(true);
+    void fetchPage(page + 1, key).finally(() => {
+      if (key === requestKey.current) setLoadingMore(false);
+    });
+  };
 
   const upload = async (file: File) => {
     setUploading(true);
@@ -605,6 +644,19 @@ export function MediaPickerDialog({
               </li>
             ))}
           </ul>
+        )}
+
+        {!loading && rows.length > 0 && (
+          <div className="admin-media-picker__more">
+            <span className="field-hint">
+              Showing {rows.length} of {total} {kind === 'image' ? 'images' : kind === 'video' ? 'videos' : 'documents'}
+            </span>
+            {page < totalPages && (
+              <button type="button" className="btn btn--light" onClick={loadMore} disabled={loadingMore}>
+                {loadingMore ? 'Loading…' : 'Load more'}
+              </button>
+            )}
+          </div>
         )}
 
         <div className="admin-savebar">

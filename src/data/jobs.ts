@@ -2,7 +2,7 @@ export type JobListing = {
   id: string;
   title: string;
   location: string;
-  type: 'Permanent' | 'Short-term expert' | 'Freelance';
+  type: 'Permanent' | 'Short-term expert' | 'Long-term' | 'Freelance';
   expertise: string;
   published: string;
   deadline: string;

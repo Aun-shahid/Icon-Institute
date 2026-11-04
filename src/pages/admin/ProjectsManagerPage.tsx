@@ -48,7 +48,8 @@ const EMPTY: Draft = {
   title: '',
   subtitle: '',
   countries: [],
-  region: 'africa',
+  // Optional: multi-region / worldwide projects have no single region.
+  region: '',
   yearStart: '',
   yearEnd: '',
   periodStart: '',
@@ -124,7 +125,7 @@ export function ProjectsManagerPage() {
         : item.country
           ? [item.country]
           : [],
-      region: item.region,
+      region: item.region ?? '',
       yearStart: String(item.yearStart),
       yearEnd: String(item.yearEnd),
       periodStart: item.periodStart ?? '',
@@ -176,7 +177,7 @@ export function ProjectsManagerPage() {
       title: draft.title,
       subtitle: draft.subtitle || null,
       countries,
-      region: draft.region,
+      region: draft.region || null,
       yearStart: start,
       yearEnd: end,
       periodStart: draft.periodStart || null,
@@ -403,11 +404,12 @@ export function ProjectsManagerPage() {
               </span>
             </label>
             <label>
-              Region * (drives the regional project pages and the filter)
+              Region (optional — drives the regional project pages and the filter)
               <select
                 value={draft.region}
                 onChange={(e) => setDraft({ ...draft, region: e.target.value })}
               >
+                <option value="">No region (multi-region / worldwide)</option>
                 {toOptions(REGION_LABELS).map((o) => (
                   <option key={o.value} value={o.value}>
                     {o.label}
@@ -579,7 +581,7 @@ export function ProjectsManagerPage() {
               rows.map((item) => (
                 <tr key={item.id}>
                   <td>{item.title}</td>
-                  <td>{REGION_LABELS[item.region] ?? item.region}</td>
+                  <td>{item.region ? (REGION_LABELS[item.region] ?? item.region) : '—'}</td>
                   <td className="admin-table__num">
                     {item.yearStart}–{item.yearEnd}
                   </td>

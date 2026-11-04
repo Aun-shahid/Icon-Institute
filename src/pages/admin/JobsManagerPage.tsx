@@ -23,7 +23,7 @@ import {
 } from '../../lib/api';
 
 const PAGE_SIZE = 10;
-const JOB_TYPES = ['Permanent', 'Short-term expert', 'Freelance'] as const;
+const JOB_TYPES = ['Permanent', 'Short-term expert', 'Long-term', 'Freelance'] as const;
 
 type Draft = {
   title: string;
