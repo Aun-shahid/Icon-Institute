@@ -19,7 +19,7 @@ COPY . .
 
 # Vite inlines env vars at build time, so the API URL must be supplied here.
 # Defaults to the deployed API; override per environment with --build-arg.
-ARG VITE_API_BASE_URL=https://iconinstitue.api.dev.codexcape.solutions/api/v1
+ARG VITE_API_BASE_URL=https://api.icon-institute.de/api/v1
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 
 RUN npm run build

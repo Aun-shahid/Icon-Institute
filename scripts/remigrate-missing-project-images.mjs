@@ -14,7 +14,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const API =
   process.env.CMS_API_BASE ??
-  'https://iconinstitue.api.dev.codexcape.solutions/api/v1';
+  'https://api.icon-institute.de/api/v1';
 const WP = 'https://hp.icon-institute.de';
 const EMAIL = process.env.CMS_EMAIL ?? 'admin@icon-institute.de';
 const PASSWORD = process.env.CMS_PASSWORD ?? '';

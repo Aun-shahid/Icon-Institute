@@ -102,13 +102,13 @@ Vite inlines environment variables during `npm run build`, so this must be set
 **before** the build, not at runtime:
 
 ```
-VITE_API_BASE_URL=https://iconinstitue.api.dev.codexcape.solutions/api/v1
+VITE_API_BASE_URL=https://api.icon-institute.de/api/v1
 ```
 
 With the Dockerfile, pass it as a build argument:
 
 ```bash
-docker build --build-arg VITE_API_BASE_URL=https://iconinstitue.api.dev.codexcape.solutions/api/v1 -t icon-site .
+docker build --build-arg VITE_API_BASE_URL=https://api.icon-institute.de/api/v1 -t icon-site .
 docker run -p 8080:80 icon-site
 ```
 

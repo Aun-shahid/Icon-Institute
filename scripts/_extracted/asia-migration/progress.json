@@ -497,7 +497,7 @@
   {
     "ok": false,
     "wpId": "24599",
-    "error": "HTTP 422 for https://iconinstitue.api.dev.codexcape.solutions/api/v1/projects: {\"error\":\"validation_error\",\"message\":\"Some fields are missing or invalid.\",\"details\":[{\"field\":\"title\",\"message\":\"String should have at least 3 characters\"},{\"field\":\"description\",\"message\":\"String should have at least 10 characters\"}]}"
+    "error": "HTTP 422 for https://api.icon-institute.de/api/v1/projects: {\"error\":\"validation_error\",\"message\":\"Some fields are missing or invalid.\",\"details\":[{\"field\":\"title\",\"message\":\"String should have at least 3 characters\"},{\"field\":\"description\",\"message\":\"String should have at least 10 characters\"}]}"
   },
   {
     "ok": true,
