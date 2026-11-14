@@ -14,12 +14,22 @@ const EXPERTISE_HOME_TITLES: Record<string, string> = {
 };
 
 export function HomePage() {
+  // Text and images are CMS-managed (Content & Media Editor → Home). The
+  // bundled data is the fallback until the published page arrives, and fills
+  // any section the CMS response does not contain.
   const cmsHome = usePublished<HomeData>('/pages/home', bundledHome);
   const latestNews = usePublished<NewsItem[]>('/news', bundledNews);
   const newsItems =
     Array.isArray(latestNews) && latestNews.length > 0 ? latestNews : bundledNews;
   const homePage: HomeData = {
     ...bundledHome,
+    ...cmsHome,
+    // An empty slide list would leave the hero blank, so keep the bundled one.
+    heroSlides:
+      Array.isArray(cmsHome.heroSlides) && cmsHome.heroSlides.length > 0
+        ? cmsHome.heroSlides
+        : bundledHome.heroSlides,
+    // The featured news strip always shows the three latest published articles.
     featuredNews: {
       title: cmsHome.featuredNews?.title ?? bundledHome.featuredNews.title,
       items: newsItems.slice(0, 3),
@@ -27,12 +37,14 @@ export function HomePage() {
   };
 
   const slides = homePage.heroSlides;
-  const [activeSlide, setActiveSlide] = useState(0);
+  const [slideTick, setSlideTick] = useState(0);
+  // The published list can be shorter than the bundled one, so stay in range.
+  const activeSlide = slideTick % slides.length;
 
   useEffect(() => {
     if (slides.length < 2) return undefined;
     const timer = window.setInterval(
-      () => setActiveSlide((current) => (current + 1) % slides.length),
+      () => setSlideTick((current) => (current + 1) % slides.length),
       5600,
     );
     return () => window.clearInterval(timer);
@@ -57,7 +69,9 @@ export function HomePage() {
         <div className="home-hero__slider">
           {slides.map((s, index) => (
             <div
-              key={s.overlayWord}
+              // Editors can give two slides the same word, so the position
+              // keeps each key unique.
+              key={`${index}-${s.overlayWord}`}
               className={`home-hero-triple__item ${index === activeSlide ? 'is-active' : ''}`}
               aria-hidden={index !== activeSlide}
             >
