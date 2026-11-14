@@ -238,8 +238,9 @@ function Field({
 
 export function ContentMediaPage() {
   const { can } = useAuth();
-  const [pages, setPages] = useState<PageInfo[]>([]);
-  const [selected, setSelected] = useState('home');
+  const [pages, setPages] = useState<PageInfo[] | null>(null);
+  // Chosen once the list arrives, so we never request a page that is absent.
+  const [selected, setSelected] = useState('');
   const [detail, setDetail] = useState<PageDetail | null>(null);
   const [data, setData] = useState<Json | null>(null);
   const [dirty, setDirty] = useState(false);
@@ -251,11 +252,21 @@ export function ContentMediaPage() {
   useEffect(() => {
     api.pages
       .list()
-      .then(setPages)
-      .catch((err: unknown) => setError(errorText(err)));
+      .then((list) => {
+        setPages(list);
+        const initial = list.find((p) => p.page === 'home') ?? list[0];
+        if (initial) setSelected(initial.page);
+        else setLoading(false);
+      })
+      .catch((err: unknown) => {
+        setPages([]);
+        setLoading(false);
+        setError(errorText(err));
+      });
   }, []);
 
   useEffect(() => {
+    if (!selected) return;
     let cancelled = false;
     setLoading(true);
     setError('');
@@ -321,9 +332,10 @@ export function ContentMediaPage() {
   const hasUnpublished = dirty || (detail?.has_unpublished_changes ?? false);
 
   const pageOptions = useMemo(
-    () => pages.map((p) => ({ value: p.page, label: p.label })),
+    () => (pages ?? []).map((p) => ({ value: p.page, label: p.label })),
     [pages]
   );
+  const noPages = pages !== null && pages.length === 0 && !error;
 
   return (
     <div className="admin-page">
@@ -356,6 +368,14 @@ export function ContentMediaPage() {
           )
         }
       >
+        {noPages && (
+          <p className="admin-table__empty" role="status">
+            No pages are set up in this CMS database yet. An administrator needs
+            to initialise them once on the server with{' '}
+            <code>python -m scripts.seed_pages --apply</code> (existing pages are
+            never overwritten).
+          </p>
+        )}
         <div className="admin-form">
           <label>
             Choose a page to edit

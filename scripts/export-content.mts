@@ -3,13 +3,13 @@
  * can migrate it into the CMS database — the "content migration" step of the
  * agreement, run from the real source of truth.
  *
- *    npx -y tsx scripts/export-content.mts
+ *    npx -y tsx scripts/export-content.mts [path/to/seed_data]
  *
- * Output: ../Backend/seed_data/*.json
+ * Output: ../icon-institute-Backend/seed_data/*.json (or ../Backend/…)
  */
 
-import { mkdirSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { newsItems } from '../src/data/news';
@@ -25,7 +25,15 @@ import { footer } from '../src/data/footer';
 import { IMAGE_MANIFEST } from '../src/data/images';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const outDir = join(here, '..', '..', 'Backend', 'seed_data');
+// Optional first argument: the seed_data folder to write. Otherwise the
+// backend checked out next to this repo (icon-institute-Backend, or the
+// older "Backend" folder name).
+const siblingBackend = ['icon-institute-Backend', 'Backend']
+  .map((name) => join(here, '..', '..', name))
+  .find((dir) => existsSync(dir));
+const outDir = process.argv[2]
+  ? resolve(process.argv[2])
+  : join(siblingBackend ?? join(here, '..', '..', 'Backend'), 'seed_data');
 mkdirSync(outDir, { recursive: true });
 
 function write(name: string, data: unknown) {
