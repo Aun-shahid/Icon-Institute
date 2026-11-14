@@ -142,11 +142,13 @@ function TwoFactorCard() {
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
 
-  const begin = async () => {
+  const begin = async (e: FormEvent) => {
+    e.preventDefault();
     setBusy(true);
     setError('');
     try {
-      setSetup(await api.auth.setupTwoFactor());
+      setSetup(await api.auth.setupTwoFactor(password));
+      setPassword('');
     } catch (err) {
       setError(errorText(err));
     } finally {
@@ -177,8 +179,9 @@ function TwoFactorCard() {
     setBusy(true);
     setError('');
     try {
-      await api.auth.disableTwoFactor(password);
+      await api.auth.disableTwoFactor(password, code);
       setPassword('');
+      setCode('');
       setRecoveryCodes(null);
       setNotice('Two-factor authentication has been switched off.');
       await refreshUser();
@@ -246,16 +249,23 @@ function TwoFactorCard() {
       )}
 
       {!enabled && !setup && !recoveryCodes && (
-        <div className="admin-savebar">
-          <button
-            type="button"
-            className="btn btn--primary"
-            onClick={() => void begin()}
-            disabled={busy}
-          >
-            {busy ? 'Preparing…' : 'Set up authenticator app'}
-          </button>
-        </div>
+        <form className="admin-form" onSubmit={begin}>
+          <label>
+            Confirm your password to set up two-factor authentication
+            <input
+              type="password"
+              required
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </label>
+          <div className="admin-savebar">
+            <button type="submit" className="btn btn--primary" disabled={busy}>
+              {busy ? 'Preparing…' : 'Set up authenticator app'}
+            </button>
+          </div>
+        </form>
       )}
 
       {setup && (
@@ -318,6 +328,19 @@ function TwoFactorCard() {
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+            />
+          </label>
+          <label>
+            Current authenticator code (or a recovery code)
+            <input
+              type="text"
+              required
+              minLength={6}
+              maxLength={32}
+              autoComplete="one-time-code"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              placeholder="123456"
             />
           </label>
           <div className="admin-savebar">

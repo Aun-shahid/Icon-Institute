@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { jobsPage as bundledJobsPage, type JobListing } from '../data/jobs';
+import { jobsPage as bundledJobsPage, isJobExpired, type JobListing } from '../data/jobs';
 import { homePage as bundledHome, type HomePage as HomeData } from '../data/home';
 import { PageHero } from '../components/PageHero';
 import { Seo } from '../components/Seo';
@@ -19,7 +19,9 @@ export function JobsPage() {
     home.quickLinks.find((l) => l.href === '/jobs')?.image ??
     'icon_institute_jobs.jpg';
 
-  const openJobs = jobsPage.listings.filter((j) => j.status === 'open');
+  const openJobs = jobsPage.listings.filter(
+    (j) => j.status === 'open' && !isJobExpired(j)
+  );
 
   return (
     <div className="jobs-page">

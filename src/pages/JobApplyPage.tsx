@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { jobsPage as bundledJobsPage, type JobListing } from '../data/jobs';
+import { jobsPage as bundledJobsPage, isJobExpired, type JobListing } from '../data/jobs';
 import { homePage as bundledHome, type HomePage as HomeData } from '../data/home';
 import { PageHero } from '../components/PageHero';
 import { Seo } from '../components/Seo';
@@ -14,7 +14,10 @@ export function JobApplyPage() {
   const heroImage =
     home.quickLinks.find((l) => l.href === '/jobs')?.image ??
     'icon_institute_jobs.jpg';
-  const job = jobId ? listings.find((j) => j.id === jobId) : undefined;
+  // The API refuses applications to expired ads; don't offer the form either.
+  const job = jobId
+    ? listings.find((j) => j.id === jobId && !isJobExpired(j))
+    : undefined;
   const applicationEmail =
     (job as { application_email?: string } | undefined)?.application_email ??
     bundledJobsPage.email;

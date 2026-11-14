@@ -1,5 +1,5 @@
 import { Link, useParams } from 'react-router-dom';
-import { jobsPage as bundledJobsPage, type JobListing } from '../data/jobs';
+import { jobsPage as bundledJobsPage, isJobExpired, type JobListing } from '../data/jobs';
 import { homePage as bundledHome, type HomePage as HomeData } from '../data/home';
 import { PageHero } from '../components/PageHero';
 import { Seo } from '../components/Seo';
@@ -12,7 +12,10 @@ export function JobDetailPage() {
   const heroImage =
     home.quickLinks.find((l) => l.href === '/jobs')?.image ??
     'icon_institute_jobs.jpg';
-  const job = jobId ? listings.find((j) => j.id === jobId) : undefined;
+  // An expired ad is treated as gone, exactly like the API's 404 for it.
+  const job = jobId
+    ? listings.find((j) => j.id === jobId && !isJobExpired(j))
+    : undefined;
 
   if (!job) {
     return (

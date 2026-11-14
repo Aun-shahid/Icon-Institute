@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { siteSeo, type PageSeo } from '../data/seo';
 import { usePublished } from '../hooks/usePublished';
+import { assetUrl } from '../lib/api';
 
 function upsertMeta(
   attr: 'name' | 'property',
@@ -67,9 +68,12 @@ export function Seo({
 
   useEffect(() => {
     const url = `${siteSeo.siteUrl}${path === '/' ? '' : path}`;
-    const absoluteImage = image.startsWith('http')
-      ? image
-      : `${siteSeo.siteUrl}${image}`;
+    // CMS media (`/media/...`) lives on the API origin, not the site origin;
+    // assetUrl() resolves that (and bare filenames) before we absolutise.
+    const resolvedImage = assetUrl(image);
+    const absoluteImage = resolvedImage.startsWith('http')
+      ? resolvedImage
+      : `${siteSeo.siteUrl}${resolvedImage}`;
 
     document.title = title;
     upsertMeta('name', 'description', description);

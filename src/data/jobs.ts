@@ -127,3 +127,26 @@ export const jobsPage: JobsPage = {
 export function getJobById(id: string): JobListing | undefined {
   return jobsPage.listings.find((j) => j.id === id);
 }
+
+/** `YYYY-MM-DD` of `now` in German local time (the `en-CA` locale is ISO-ordered). */
+const berlinDate = new Intl.DateTimeFormat('en-CA', {
+  timeZone: 'Europe/Berlin',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
+
+/**
+ * True once a job's application deadline (`YYYY-MM-DD`) has passed.
+ *
+ * The CMS API already leaves expired ads out of `/public/jobs`; this guards
+ * the bundled fallback listings and any cached response. Same rule as the
+ * backend (`job_listing_cutoff`): an ad stays visible through its whole
+ * deadline day in German local time and expires at 00:00 Europe/Berlin the
+ * next day, regardless of the visitor's own time zone. Ads without a
+ * deadline are never treated as expired.
+ */
+export function isJobExpired(job: Pick<JobListing, 'deadline'>, now = Date.now()): boolean {
+  if (!job.deadline) return false;
+  return job.deadline < berlinDate.format(now);
+}

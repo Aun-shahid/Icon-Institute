@@ -546,8 +546,9 @@ export const api = {
         body: { current_password: currentPassword, new_password: newPassword },
       }),
 
-    setupTwoFactor: () =>
-      send<TwoFactorSetup>('/auth/2fa/setup', { method: 'POST' }),
+    /** The current password is re-confirmed before a new secret is issued. */
+    setupTwoFactor: (password: string) =>
+      send<TwoFactorSetup>('/auth/2fa/setup', { method: 'POST', body: { password } }),
 
     enableTwoFactor: (code: string) =>
       send<{ two_factor_enabled: true; recovery_codes: string[] }>(
@@ -555,10 +556,11 @@ export const api = {
         { method: 'POST', body: { code } }
       ),
 
-    disableTwoFactor: (password: string) =>
+    /** Needs both factors: the password and a current TOTP or recovery code. */
+    disableTwoFactor: (password: string, code: string) =>
       send<{ message: string }>('/auth/2fa/disable', {
         method: 'POST',
-        body: { password },
+        body: { password, code },
       }),
   },
 
