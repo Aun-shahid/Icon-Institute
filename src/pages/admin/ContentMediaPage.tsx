@@ -56,6 +56,17 @@ function Field({
   depth: number;
 }) {
   const label = labelize(String(fieldKey));
+  // Text fields pick their control (one-line input, or full-width textarea)
+  // from the value they open with, and keep it while being edited. Deciding
+  // from the live value made a long field turn into a half-width input as soon
+  // as it was shortened or cleared — the field jumped and lost the cursor.
+  const [textLayout] = useState(() => {
+    const text = typeof value === 'string' ? value : '';
+    return {
+      multiline: text.length > 90 || text.includes('\n'),
+      rows: Math.min(10, Math.max(3, Math.ceil(text.length / 80))),
+    };
+  });
 
   if (isImageField(String(fieldKey), value)) {
     return (
@@ -72,13 +83,13 @@ function Field({
   if (typeof value === 'string') {
     // Long prose gets a textarea and the full width; short values pair up
     // two per row so a page does not become one endless column.
-    const isLong = value.length > 90;
+    const isLong = textLayout.multiline;
     const field = (
       <label>
         {label}
         {isLong ? (
           <textarea
-            rows={Math.min(10, Math.max(3, Math.ceil(value.length / 80)))}
+            rows={textLayout.rows}
             value={value}
             onChange={(e) => onEdit(path, e.target.value)}
           />
@@ -236,6 +247,18 @@ function Field({
 
 /* ------------------------------------------------------------------- page */
 
+/** Order of the "Choose a page to edit" list (page IDs). */
+const PAGE_ORDER = [
+  'home',
+  'about',
+  'expertise',
+  'projects-page',
+  'jobs-page',
+  'download',
+  'contact',
+  'footer',
+];
+
 export function ContentMediaPage() {
   const { can } = useAuth();
   const [pages, setPages] = useState<PageInfo[] | null>(null);
@@ -331,10 +354,17 @@ export function ContentMediaPage() {
 
   const hasUnpublished = dirty || (detail?.has_unpublished_changes ?? false);
 
-  const pageOptions = useMemo(
-    () => (pages ?? []).map((p) => ({ value: p.page, label: p.label })),
-    [pages]
-  );
+  // The API lists pages alphabetically; editors want the site's own order.
+  // Pages not listed here keep the API's order, after these.
+  const pageOptions = useMemo(() => {
+    const rank = (page: string) => {
+      const index = PAGE_ORDER.indexOf(page);
+      return index === -1 ? PAGE_ORDER.length : index;
+    };
+    return [...(pages ?? [])]
+      .sort((a, b) => rank(a.page) - rank(b.page))
+      .map((p) => ({ value: p.page, label: p.label }));
+  }, [pages]);
   const noPages = pages !== null && pages.length === 0 && !error;
 
   return (
