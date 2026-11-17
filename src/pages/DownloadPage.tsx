@@ -53,7 +53,12 @@ export function InformationMaterialPage() {
         description={informationMaterial.intro}
         path="/download/information-material"
       />
-      <PageHero title="INFORMATION MATERIAL" compact />
+      <PageHero
+        title="INFORMATION MATERIAL"
+        compact
+        image="icon_institut_haus_3.jpg"
+        imageAlt=""
+      />
       <section className="content-section">
         <div className="container narrow">
           <h2>Brochures and Flyers</h2>
@@ -114,7 +119,12 @@ export function VideosPage() {
         description={videos.intro}
         path="/download/videos"
       />
-      <PageHero title="VIDEOS" compact />
+      <PageHero
+        title="VIDEOS"
+        compact
+        image="icon_institut_haus_3.jpg"
+        imageAlt=""
+      />
       <section className="content-section">
         <div className="container narrow">
           <p>{videos.intro}</p>
