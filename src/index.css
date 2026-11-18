@@ -353,6 +353,14 @@ code {
   max-width: 68ch;
 }
 
+/* Continent intros are one sentence: use the full content width so most fit
+   on one line, and when one must wrap (narrower screens, longer intros)
+   split it into two even lines instead of leaving a short tail. */
+.project-region .lede {
+  max-width: none;
+  text-wrap: balance;
+}
+
 .muted {
   color: hsl(var(--muted-foreground));
 }

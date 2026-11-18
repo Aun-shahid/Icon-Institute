@@ -14,6 +14,20 @@ import { Pagination } from '../components/Pagination';
 import { usePagination } from '../hooks/usePagination';
 import { usePublished } from '../hooks/usePublished';
 
+/**
+ * Search-friendly form of a text: lower case, accents removed, and every run
+ * of punctuation or whitespace (hyphens, dashes, commas, "&"…) turned into a
+ * single space — so "socio economic" finds "Socio-economic" and "-" finds "–".
+ */
+function normaliseSearch(text: string): string {
+  return text
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .trim();
+}
+
 export function ProjectsPage() {
   // The published project catalogue, maintained through the CMS Projects
   // Manager. Filtering and search still run entirely in the browser.
@@ -27,7 +41,9 @@ export function ProjectsPage() {
 
   const filtered = useMemo(() => {
     const currentYear = new Date().getFullYear();
-    const q = query.trim().toLowerCase();
+    // Every word of the query must appear somewhere (in any order), so parts
+    // of a title match even when they are not next to each other.
+    const terms = normaliseSearch(query).split(' ').filter(Boolean);
     return sampleProjects.filter((p) => {
       if (region && p.region !== region) return false;
       if (recent === 'last-3' && p.yearEnd < currentYear - 3) return false;
@@ -35,9 +51,11 @@ export function ProjectsPage() {
       if (year && !(p.yearStart <= +year && p.yearEnd >= +year)) return false;
       if (expertise && p.expertise !== expertise) return false;
       if (volume && p.volume !== volume) return false;
-      if (q) {
-        const hay = `${p.title} ${p.country} ${p.description} ${p.region ?? ''}`.toLowerCase();
-        if (!hay.includes(q)) return false;
+      if (terms.length > 0) {
+        const hay = normaliseSearch(
+          `${p.title} ${p.country} ${p.description} ${p.region ?? ''}`
+        );
+        if (!terms.every((term) => hay.includes(term))) return false;
       }
       return true;
     });
