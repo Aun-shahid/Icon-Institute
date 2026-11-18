@@ -359,6 +359,7 @@ code {
 .project-region .lede {
   max-width: none;
   text-wrap: balance;
+  font-size: 1.05rem;
 }
 
 .muted {
