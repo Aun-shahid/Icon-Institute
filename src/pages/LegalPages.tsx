@@ -1,5 +1,4 @@
 import { impressum, privacyPolicy, type LegalPage } from '../data/legal';
-import { PageHero } from '../components/PageHero';
 import { Seo } from '../components/Seo';
 import { pageSeo } from '../data/seo';
 
@@ -11,11 +10,12 @@ function LegalContent({
   seoKey: 'privacy' | 'impressum';
 }) {
   return (
-    <div>
+    <div className="legal-page">
       <Seo {...pageSeo[seoKey]} />
-      <PageHero title={page.title} compact />
+      {/* Plain white page with the title, as on the original site (no banner). */}
       <section className="content-section">
         <div className="container narrow">
+          <h1 className="legal-page__title">{page.title}</h1>
           {page.sections.map((section) => (
             <div key={section.title} className="legal-section">
               <h2>{section.title}</h2>

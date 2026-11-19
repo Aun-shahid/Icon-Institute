@@ -27,8 +27,9 @@ export const downloadPage: DownloadPage = {
     materials: [
       {
         title: '50th Anniversary Brochure',
-        // Interactive flipbook on the legacy site (no standalone PDF).
-        file: 'https://hp.icon-institute.de/flipbook/flipbook-ICON50.html',
+        // The legacy flipbook URL now opens the new site's home page, so no file
+        // is linked: the page shows "Document coming soon" until the original
+        // brochure PDF is supplied and uploaded through the CMS.
         description:
           'Celebrating 50 years of ICON-INSTITUTE expertise in international cooperation.',
       },

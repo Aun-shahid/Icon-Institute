@@ -940,6 +940,11 @@ code {
   object-position: center 18%;
 }
 
+/* About banner: keep the headquarters' glass atrium in frame. */
+.about-page .page-hero__img {
+  object-position: center 45%;
+}
+
 /* Projects listing and detail have no hero, so tighten the gap under the
    site header. */
 .projects-page > .content-section:first-of-type,
@@ -2604,7 +2609,7 @@ code {
 
 .job-card__meta {
   display: inline-block;
-  font-family: var(--font-mono);
+  font-family: var(--font); /* site typography (was monospace) */
   color: hsl(var(--muted-foreground));
   background: hsl(var(--muted));
   font-size: 0.78rem;
@@ -2612,6 +2617,21 @@ code {
   border-radius: var(--radius-sm);
   margin-bottom: 0.6rem;
   margin-right: 0.35rem;
+}
+
+/* Job ad sections: Background / Job Description / Candidate's Profile */
+.job-section {
+  margin-top: 2.25rem;
+}
+
+.job-section h4 {
+  margin: 1.4rem 0 0.6rem;
+  font-family: var(--font);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+  color: hsl(var(--primary));
 }
 
 .job-card__actions {
@@ -2637,6 +2657,16 @@ code {
 
 .legal-section h2::before {
   display: none;
+}
+
+/* Privacy / Impressum: plain white page with the title (no dark banner). */
+.legal-page__title {
+  margin: 0 0 2.25rem;
+}
+
+/* Address blocks are one paragraph with line breaks. */
+.legal-section p {
+  white-space: pre-line;
 }
 
 /* --------------------------------------------------------------------------
@@ -5956,6 +5986,15 @@ a, a:hover { color: #861a14; }
   width: 2.75rem;
   height: 2.75rem;
   box-shadow: 0 6px 16px hsl(222 30% 5% / 0.2);
+}
+
+/* One style for every expertise on project cards (client feedback): white tile,
+   light-grey border, ICON dark-red icon. Overrides the per-expertise accent
+   colours only here - home-page service tiles keep theirs. */
+.project-card .project-card__icon {
+  background: #fff;
+  border: 1px solid hsl(0 0% 86%);
+  color: hsl(var(--primary));
 }
 
 .project-card__body {

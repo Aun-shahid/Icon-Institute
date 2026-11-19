@@ -37,6 +37,11 @@ type Draft = {
   description: string[];
   requirements: string[];
   application_email: string;
+  background: string[];
+  project_acquisition: string[];
+  project_management: string[];
+  your_profile: string[];
+  what_we_offer: string[];
 };
 
 const EMPTY: Draft = {
@@ -51,7 +56,14 @@ const EMPTY: Draft = {
   description: [],
   requirements: [],
   application_email: '',
+  background: [],
+  project_acquisition: [],
+  project_management: [],
+  your_profile: [],
+  what_we_offer: [],
 };
+
+const cleanLines = (lines: string[]) => lines.filter((l) => l.trim());
 
 /* ------------------------------------------------------------ applications */
 
@@ -381,6 +393,11 @@ export function JobsManagerPage() {
       description: item.description ?? [],
       requirements: item.requirements ?? [],
       application_email: item.application_email ?? '',
+      background: item.background ?? [],
+      project_acquisition: item.project_acquisition ?? [],
+      project_management: item.project_management ?? [],
+      your_profile: item.your_profile?.length ? item.your_profile : (item.requirements ?? []),
+      what_we_offer: item.what_we_offer ?? [],
     });
     setFormError('');
   };
@@ -395,11 +412,18 @@ export function JobsManagerPage() {
     e.preventDefault();
     setSaving(true);
     setFormError('');
+    const yourProfile = cleanLines(draft.your_profile);
     const payload = {
       ...draft,
-      description: draft.description.filter((p) => p.trim()),
-      requirements: draft.requirements.filter((p) => p.trim()),
+      description: cleanLines(draft.description),
+      // `requirements` mirrors "Your profile" so older consumers keep working.
+      requirements: yourProfile,
       application_email: draft.application_email || null,
+      background: cleanLines(draft.background),
+      project_acquisition: cleanLines(draft.project_acquisition),
+      project_management: cleanLines(draft.project_management),
+      your_profile: yourProfile,
+      what_we_offer: cleanLines(draft.what_we_offer),
     };
     try {
       if (editing) {
@@ -650,25 +674,67 @@ export function JobsManagerPage() {
               </label>
             </FormSection>
 
-            <FormSection title="Details">
+            <FormSection title="Background" hint="Optional - hidden on the site when empty.">
               <Wide>
                 <LinesEditor
-                  label="Role description *"
+                  label="Background"
+                  value={draft.background}
+                  onChange={(background) => setDraft({ ...draft, background })}
+                  rows={4}
+                  hint="One paragraph per line."
+                />
+              </Wide>
+            </FormSection>
+
+            <FormSection title="Job Description">
+              <Wide>
+                <LinesEditor
+                  label="Introduction *"
                   value={draft.description}
                   onChange={(description) => setDraft({ ...draft, description })}
-                  rows={6}
+                  rows={4}
                   required
                   hint="One paragraph per line — at least one is required."
                 />
               </Wide>
               <Wide>
                 <LinesEditor
-                  label="Requirements *"
-                  value={draft.requirements}
-                  onChange={(requirements) => setDraft({ ...draft, requirements })}
+                  label="Project Acquisition"
+                  value={draft.project_acquisition}
+                  onChange={(project_acquisition) => setDraft({ ...draft, project_acquisition })}
+                  rows={5}
+                  hint="One task per line — shown as bullets. Optional."
+                />
+              </Wide>
+              <Wide>
+                <LinesEditor
+                  label="Project Management"
+                  value={draft.project_management}
+                  onChange={(project_management) => setDraft({ ...draft, project_management })}
+                  rows={5}
+                  hint="One task per line — shown as bullets. Optional."
+                />
+              </Wide>
+            </FormSection>
+
+            <FormSection title="Candidate's Profile">
+              <Wide>
+                <LinesEditor
+                  label="Your profile *"
+                  value={draft.your_profile}
+                  onChange={(your_profile) => setDraft({ ...draft, your_profile })}
                   rows={6}
                   required
-                  hint="One requirement per line — shown as bullets on the site."
+                  hint="One requirement per line — shown as bullets. At least one is required."
+                />
+              </Wide>
+              <Wide>
+                <LinesEditor
+                  label="What we offer"
+                  value={draft.what_we_offer}
+                  onChange={(what_we_offer) => setDraft({ ...draft, what_we_offer })}
+                  rows={5}
+                  hint="One item per line — shown as bullets. Optional."
                 />
               </Wide>
             </FormSection>

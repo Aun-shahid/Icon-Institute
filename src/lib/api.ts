@@ -158,6 +158,12 @@ export type JobItem = CmsEnvelope & {
   description: string[];
   requirements: string[];
   application_email: string | null;
+  /** Structured job-ad sections (optional; older ads use description/requirements). */
+  background?: string[] | null;
+  project_acquisition?: string[] | null;
+  project_management?: string[] | null;
+  your_profile?: string[] | null;
+  what_we_offer?: string[] | null;
 };
 
 export type ProjectItem = CmsEnvelope & {

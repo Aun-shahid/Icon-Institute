@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { projectImage } from '../data/projectImages';
 import { projectFilters, type SampleProject } from '../data/projects';
 import { PlaceholderImage } from './PlaceholderImage';
 import { getExpertiseIcon } from './iconMap';
@@ -41,7 +42,7 @@ export function ProjectCard({ project }: { project: SampleProject }) {
       <Link to={href} className="project-card__link">
         <span className="project-card__media">
           <PlaceholderImage
-            src={project.image ?? 'icon_projects.jpg'}
+            src={projectImage(project)}
             alt=""
             className="project-card__img"
             aspectRatio="4 / 3"

@@ -23,11 +23,9 @@ export const privacyPolicy: LegalPage = {
       title: 'Who we are?',
       paragraphs: [
         'Responsible for the Privacy Policy within the meaning of the GDPR:',
-        'ICON-INSTITUTE GmbH & Co. KG Consulting Gruppe',
-        'Holger Thoma',
-        'Von-Groote-Str. 28',
-        '50968 Köln',
-        'Germany',
+        // One paragraph with line breaks, as on the original page (shown via
+        // `white-space: pre-line` on legal paragraphs).
+        'ICON-INSTITUTE GmbH & Co. KG Consulting Gruppe\nHolger Thoma\nVon-Groote-Str. 28\n50968 Köln\nGermany',
       ],
     },
     {

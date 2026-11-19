@@ -34,7 +34,8 @@ export type AboutPage = {
 };
 
 export const aboutPage: AboutPage = {
-  heroImage: 'icon-institute-services.jpg',
+  // Original About banner (1920×1080 photo of the Köln headquarters).
+  heroImage: 'icon_institut_haus.jpg',
   whatWeDoImage: 'icon-institute-services.jpg',
   teamImage: 'icon-institute_9-600x600.jpg',
   whatWeDo: [

@@ -8,6 +8,7 @@ import {
 } from '../data/projects';
 import { PlaceholderImage } from '../components/PlaceholderImage';
 import { Seo } from '../components/Seo';
+import { projectImage } from '../data/projectImages';
 import { siteSeo } from '../data/seo';
 import { getPublished } from '../hooks/usePublished';
 import { assetUrl } from '../lib/api';
@@ -162,14 +163,13 @@ export function ProjectDetailPage() {
                 )}
               </header>
 
-              {project.image && (
-                <PlaceholderImage
-                  src={project.image}
-                  alt={project.title}
-                  className="project-detail__img"
-                  aspectRatio="16 / 9"
-                />
-              )}
+              {/* Own image, else the expertise's standard photo (same rule as the cards). */}
+              <PlaceholderImage
+                src={projectImage(project)}
+                alt={project.title}
+                className="project-detail__img"
+                aspectRatio="16 / 9"
+              />
 
               <h3 className="project-detail__section-title">Project description</h3>
               {paragraphs.map((paragraph, i) => (

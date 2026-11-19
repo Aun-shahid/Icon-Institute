@@ -5,6 +5,21 @@ import { PageHero } from '../components/PageHero';
 import { Seo } from '../components/Seo';
 import { usePublished } from '../hooks/usePublished';
 
+/** A titled bullet list inside a job section; renders nothing when empty. */
+function BulletList({ title, items }: { title: string; items: string[] }) {
+  if (items.length === 0) return null;
+  return (
+    <>
+      <h4>{title}</h4>
+      <ul>
+        {items.map((item, i) => (
+          <li key={`${i}-${item.slice(0, 32)}`}>{item}</li>
+        ))}
+      </ul>
+    </>
+  );
+}
+
 export function JobDetailPage() {
   const { jobId } = useParams();
   const listings = usePublished<JobListing[]>('/jobs', bundledJobsPage.listings);
@@ -27,6 +42,17 @@ export function JobDetailPage() {
       </div>
     );
   }
+
+  // Structured sections take precedence; older ads fall back to
+  // description (Job Description intro) and requirements (Your profile).
+  const lines = (v?: string[] | null) => (v ?? []).filter((l) => l.trim());
+  const background = lines(job.background);
+  const intro = lines(job.description);
+  const acquisition = lines(job.project_acquisition);
+  const management = lines(job.project_management);
+  const ownProfile = lines(job.your_profile);
+  const profile = ownProfile.length > 0 ? ownProfile : lines(job.requirements);
+  const offer = lines(job.what_we_offer);
 
   return (
     <div className="job-detail">
@@ -51,16 +77,33 @@ export function JobDetailPage() {
             <time dateTime={job.deadline}>{job.deadline}</time>
           </p>
 
-          {job.description.map((p) => (
-            <p key={p.slice(0, 48)}>{p}</p>
-          ))}
+          {background.length > 0 && (
+            <section className="job-section">
+              <h3>Background</h3>
+              {background.map((p) => (
+                <p key={p.slice(0, 48)}>{p}</p>
+              ))}
+            </section>
+          )}
 
-          <h3>Requirements</h3>
-          <ul>
-            {job.requirements.map((r) => (
-              <li key={r}>{r}</li>
-            ))}
-          </ul>
+          {(intro.length > 0 || acquisition.length > 0 || management.length > 0) && (
+            <section className="job-section">
+              <h3>Job Description</h3>
+              {intro.map((p) => (
+                <p key={p.slice(0, 48)}>{p}</p>
+              ))}
+              <BulletList title="Project Acquisition" items={acquisition} />
+              <BulletList title="Project Management" items={management} />
+            </section>
+          )}
+
+          {(profile.length > 0 || offer.length > 0) && (
+            <section className="job-section">
+              <h3>Candidate&rsquo;s Profile</h3>
+              <BulletList title="Your profile" items={profile} />
+              <BulletList title="What we offer" items={offer} />
+            </section>
+          )}
 
           <p className="job-card__actions">
             <Link to={`/jobs/${job.id}/apply`} className="btn btn--primary">
