@@ -1,4 +1,4 @@
-import { useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { EmptyRow, FilterBar, PanelCard, StatusPill } from '../../components/admin/AdminUI';
 import { Pagination } from '../../components/Pagination';
 import {
@@ -55,6 +55,105 @@ const EMPTY: Draft = {
 
 /* ------------------------------------------------------------ applications */
 
+const KB = (bytes: number) => `${Math.max(1, Math.round(bytes / 1024))} KB`;
+
+/** One application, loaded from GET /applications/{id} (Administrators only). */
+function ApplicationDetailsDialog({
+  id,
+  onClose,
+}: {
+  id: string;
+  onClose: () => void;
+}) {
+  const [app, setApp] = useState<ApplicationRecord | null>(null);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    let live = true;
+    api.applications
+      .get(id)
+      .then((record) => live && setApp(record))
+      .catch((err: unknown) => live && setError(errorText(err)));
+    return () => {
+      live = false;
+    };
+  }, [id]);
+
+  const download = (file: ApplicationRecord['files'][number]) =>
+    void authorizedDownload(api.applications.fileUrl(id, file.stored_name), file.name).catch(
+      (err: unknown) => setError(errorText(err))
+    );
+
+  return (
+    <Modal
+      title={app ? app.name : 'Application'}
+      subtitle={app ? `Application for “${app.job_title}”` : undefined}
+      badge={app ? <StatusPill value={app.status} /> : undefined}
+      onClose={onClose}
+    >
+      {error && (
+        <p className="admin-login__error" role="alert">
+          {error}
+        </p>
+      )}
+      {!app && !error && <p>Loading application…</p>}
+      {app && (
+        <dl className="application-details">
+          <dt>Full name</dt>
+          <dd>{app.name}</dd>
+          <dt>Email</dt>
+          <dd>
+            <a href={`mailto:${app.email}`}>{app.email}</a>
+          </dd>
+          <dt>Phone</dt>
+          <dd>{app.phone || '—'}</dd>
+          <dt>Job</dt>
+          <dd>{app.job_title}</dd>
+          <dt>Received</dt>
+          <dd>{formatWhen(app.created_at)}</dd>
+          <dt>Consent</dt>
+          <dd>
+            {app.consent === undefined
+              ? 'Not recorded (older application)'
+              : app.consent
+                ? 'Given'
+                : 'Not given'}
+          </dd>
+          <dt>Notification email</dt>
+          <dd>
+            {app.email_status === 'sent'
+              ? `Sent ${formatWhen(app.emailed_at)}`
+              : app.email_status === 'failed'
+                ? `Not sent: ${app.email_error ?? 'unknown reason'} (the application is stored here)`
+                : app.email_status === 'pending'
+                  ? 'Pending'
+                  : 'Not recorded'}
+          </dd>
+          <dt>Message</dt>
+          <dd className="application-details__message">{app.message}</dd>
+          <dt>Documents</dt>
+          <dd>
+            {app.files.length === 0 ? (
+              'None attached'
+            ) : (
+              <ul className="application-details__files">
+                {app.files.map((f) => (
+                  <li key={f.stored_name}>
+                    <button type="button" className="row-action" onClick={() => download(f)}>
+                      Download
+                    </button>{' '}
+                    {f.kind === 'cv' ? 'CV' : 'Certificate'}: {f.name} ({KB(f.size)})
+                  </li>
+                ))}
+              </ul>
+            )}
+          </dd>
+        </dl>
+      )}
+    </Modal>
+  );
+}
+
 function ApplicationsPanel() {
   const [status, setStatus] = useState('');
   const [page, setPage] = useState(1);
@@ -62,6 +161,7 @@ function ApplicationsPanel() {
   const { rows, total, totalPages, loading, error, reload } =
     useApiList<ApplicationRecord>((p) => api.applications.list(p), params, page, 8);
   const [actionError, setActionError] = useState('');
+  const [openId, setOpenId] = useState<string | null>(null);
 
   const setAppStatus = async (row: ApplicationRecord, next: ApplicationRecord['status']) => {
     try {
@@ -162,9 +262,20 @@ function ApplicationsPanel() {
                   </td>
                   <td>
                     <StatusPill value={row.status} />
+                    {row.email_status === 'failed' && (
+                      <span className="field-hint"> · email not sent</span>
+                    )}
                   </td>
                   <td>
                     <div className="row-actions">
+                      <button
+                        type="button"
+                        className="row-action"
+                        aria-haspopup="dialog"
+                        onClick={() => setOpenId(row.id)}
+                      >
+                        Details
+                      </button>
                       <button type="button" className="row-action" onClick={() => void setAppStatus(row, 'reviewed')}>
                         Reviewed
                       </button>
@@ -186,6 +297,8 @@ function ApplicationsPanel() {
           </tbody>
         </table>
       </div>
+
+      {openId && <ApplicationDetailsDialog id={openId} onClose={() => setOpenId(null)} />}
 
       <Pagination
         page={page}
@@ -642,7 +755,8 @@ export function JobsManagerPage() {
         variant="admin"
       />
 
-      <ApplicationsPanel />
+      {/* Candidates' personal data - Administrators only (backend enforces it too). */}
+      {can('applications:read') && <ApplicationsPanel />}
 
       {scheduleFor && (
         <ScheduleDialog

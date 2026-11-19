@@ -843,7 +843,7 @@ export function BackupsPage() {
     if (
       !window.confirm(
         `Restore ${record.filename}? All CMS content is replaced by the backup. ` +
-          'User accounts are NOT touched.'
+          'User accounts and job applications (including CVs) are NOT touched.'
       )
     ) {
       return;
@@ -950,18 +950,22 @@ export function BackupsPage() {
                   </td>
                   <td>
                     <div className="row-actions">
-                      <button
-                        type="button"
-                        className="row-action"
-                        onClick={() =>
-                          void authorizedDownload(
-                            api.backups.downloadUrl(record.id),
-                            record.filename
-                          ).catch((err: unknown) => setError(errorText(err)))
-                        }
-                      >
-                        Download
-                      </button>
+                      {/* Backup files contain job applications and user accounts:
+                          the server allows the download to Administrators only. */}
+                      {can('applications:read') && (
+                        <button
+                          type="button"
+                          className="row-action"
+                          onClick={() =>
+                            void authorizedDownload(
+                              api.backups.downloadUrl(record.id),
+                              record.filename
+                            ).catch((err: unknown) => setError(errorText(err)))
+                          }
+                        >
+                          Download
+                        </button>
+                      )}
                       {can('backup:manage') && (
                         <>
                           <button

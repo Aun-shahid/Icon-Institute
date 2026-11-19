@@ -4695,6 +4695,46 @@ a.site-footer__contact:hover .site-footer__icon {
   color: #8b2e26;
 }
 
+/* Application details dialog (Jobs → Applications received → Details) */
+.application-details {
+  display: grid;
+  grid-template-columns: minmax(8rem, max-content) 1fr;
+  gap: 0.6rem 1.25rem;
+  margin: 0;
+}
+
+.application-details dt {
+  font-weight: 700;
+  color: hsl(var(--muted-foreground));
+}
+
+.application-details dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.application-details__message {
+  white-space: pre-wrap;
+}
+
+.application-details__files {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+
+@media (max-width: 560px) {
+  .application-details {
+    grid-template-columns: 1fr;
+  }
+
+  .application-details dd {
+    margin-bottom: 0.4rem;
+  }
+}
+
 /* --- admin toasts --------------------------------------------------------- */
 .admin-toast-host {
   position: fixed;

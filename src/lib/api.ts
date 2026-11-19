@@ -296,6 +296,12 @@ export type ApplicationRecord = {
   files: { kind: string; name: string; stored_name: string; size: number }[];
   status: 'new' | 'reviewed' | 'shortlisted' | 'rejected';
   created_at: string;
+  /** Candidate's consent checkbox (absent on applications stored before it was recorded). */
+  consent?: boolean;
+  /** Notification email to the careers inbox: sent after the application was stored. */
+  email_status?: 'pending' | 'sent' | 'failed';
+  email_error?: string | null;
+  emailed_at?: string | null;
 };
 
 export type DashboardData = {
@@ -684,6 +690,9 @@ export const api = {
       page?: number;
       page_size?: number;
     } = {}) => send<Page<ApplicationRecord>>(`/applications${query(params)}`),
+
+    /** One application with every candidate detail (Administrators only). */
+    get: (id: string) => send<ApplicationRecord>(`/applications/${encodeURIComponent(id)}`),
 
     setStatus: (id: string, status: ApplicationRecord['status']) =>
       send<ApplicationRecord>(`/applications/${id}`, { method: 'PATCH', body: { status } }),

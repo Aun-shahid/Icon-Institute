@@ -50,6 +50,8 @@ export function JobApplyPage() {
     body.append('email', String(fields.get('email') ?? ''));
     body.append('phone', String(fields.get('phone') ?? ''));
     body.append('message', String(fields.get('message') ?? ''));
+    // The required consent checkbox - stored with the application.
+    body.append('consent', fields.get('consent') ? 'true' : 'false');
 
     const cv = fields.get('cv');
     if (cv instanceof File && cv.size > 0) body.append('cv', cv);
