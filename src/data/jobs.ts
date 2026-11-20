@@ -1,3 +1,5 @@
+import type { JobSection } from './jobSections';
+
 export type JobListing = {
   id: string;
   title: string;
@@ -8,14 +10,17 @@ export type JobListing = {
   deadline: string;
   status: 'open' | 'closed';
   summary: string;
-  description: string[];
-  requirements: string[];
+  /** Classic layout (absent on ads created with flexible sections only). */
+  description?: string[] | null;
+  requirements?: string[] | null;
   /** Structured job-ad sections (optional; older ads use description/requirements). */
   background?: string[] | null;
   project_acquisition?: string[] | null;
   project_management?: string[] | null;
   your_profile?: string[] | null;
   what_we_offer?: string[] | null;
+  /** Flexible, per-vacancy sections in display order (take precedence when present). */
+  sections?: JobSection[] | null;
 };
 
 export type JobsPage = {

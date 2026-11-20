@@ -6,6 +6,8 @@
  * makes the server revoke the whole session family.
  */
 
+import type { JobSection } from '../data/jobSections';
+
 const API_BASE: string =
   (import.meta.env.VITE_API_BASE_URL as string | undefined) ??
   'http://127.0.0.1:8000/api/v1';
@@ -155,8 +157,9 @@ export type JobItem = CmsEnvelope & {
   deadline: string;
   status: 'open' | 'closed';
   summary: string;
-  description: string[];
-  requirements: string[];
+  /** Classic layout (absent on ads created with flexible sections only). */
+  description?: string[] | null;
+  requirements?: string[] | null;
   application_email: string | null;
   /** Structured job-ad sections (optional; older ads use description/requirements). */
   background?: string[] | null;
@@ -164,6 +167,8 @@ export type JobItem = CmsEnvelope & {
   project_management?: string[] | null;
   your_profile?: string[] | null;
   what_we_offer?: string[] | null;
+  /** Flexible, per-vacancy sections in display order (take precedence when present). */
+  sections?: JobSection[] | null;
 };
 
 export type ProjectItem = CmsEnvelope & {

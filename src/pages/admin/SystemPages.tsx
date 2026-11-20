@@ -4,7 +4,7 @@
  * Publishing · Publish & Rollback · Backups.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { EmptyRow, FilterBar, PanelCard, StatusPill } from '../../components/admin/AdminUI';
 import {
   CmsStatusPill,
@@ -13,6 +13,7 @@ import {
 } from '../../components/admin/cms';
 import { confirmToast, showToast } from '../../components/admin/Toast';
 import { useAuth } from '../../hooks/useAuth';
+import { jobSectionsFor } from '../../data/jobSections';
 import {
   api,
   assetUrl,
@@ -177,15 +178,27 @@ function JobPreview({ item }: { item: JobItem }) {
       <p>
         <em>{item.summary}</em>
       </p>
-      {(item.description ?? []).map((p, i) => (
-        <p key={i}>{p}</p>
+      {/* Same sections as the public job page: the ad's own sections in their
+          order, or the classic layout for older ads; only parts with text. */}
+      {jobSectionsFor(item).map((section, s) => (
+        <section className="job-section" key={`${s}-${section.title}`}>
+          <h3>{section.title}</h3>
+          {section.subtitle && <p className="job-section__subtitle">{section.subtitle}</p>}
+          {section.paragraphs.map((p, i) => (
+            <p key={`${i}-${p.slice(0, 48)}`}>{p}</p>
+          ))}
+          {section.boxes.map((box, b) => (
+            <Fragment key={`${b}-${box.title}`}>
+              <h4>{box.title}</h4>
+              <ul>
+                {box.items.map((bullet, i) => (
+                  <li key={`${i}-${bullet.slice(0, 32)}`}>{bullet}</li>
+                ))}
+              </ul>
+            </Fragment>
+          ))}
+        </section>
       ))}
-      <h4>Requirements</h4>
-      <ul>
-        {(item.requirements ?? []).map((r, i) => (
-          <li key={i}>{r}</li>
-        ))}
-      </ul>
     </article>
   );
 }

@@ -1,5 +1,6 @@
 import { Link, useParams } from 'react-router-dom';
 import { jobsPage as bundledJobsPage, isJobExpired, type JobListing } from '../data/jobs';
+import { jobSectionsFor } from '../data/jobSections';
 import { homePage as bundledHome, type HomePage as HomeData } from '../data/home';
 import { PageHero } from '../components/PageHero';
 import { Seo } from '../components/Seo';
@@ -43,16 +44,9 @@ export function JobDetailPage() {
     );
   }
 
-  // Structured sections take precedence; older ads fall back to
-  // description (Job Description intro) and requirements (Your profile).
-  const lines = (v?: string[] | null) => (v ?? []).filter((l) => l.trim());
-  const background = lines(job.background);
-  const intro = lines(job.description);
-  const acquisition = lines(job.project_acquisition);
-  const management = lines(job.project_management);
-  const ownProfile = lines(job.your_profile);
-  const profile = ownProfile.length > 0 ? ownProfile : lines(job.requirements);
-  const offer = lines(job.what_we_offer);
+  // The ad's own sections in the administrator's order; older ads without
+  // sections keep their classic layout. Only sections and boxes with content.
+  const sections = jobSectionsFor(job);
 
   return (
     <div className="job-detail">
@@ -77,33 +71,18 @@ export function JobDetailPage() {
             <time dateTime={job.deadline}>{job.deadline}</time>
           </p>
 
-          {background.length > 0 && (
-            <section className="job-section">
-              <h3>Background</h3>
-              {background.map((p) => (
-                <p key={p.slice(0, 48)}>{p}</p>
+          {sections.map((section, s) => (
+            <section className="job-section" key={`${s}-${section.title}`}>
+              <h3>{section.title}</h3>
+              {section.subtitle && <p className="job-section__subtitle">{section.subtitle}</p>}
+              {section.paragraphs.map((p, i) => (
+                <p key={`${i}-${p.slice(0, 48)}`}>{p}</p>
+              ))}
+              {section.boxes.map((box, b) => (
+                <BulletList key={`${b}-${box.title}`} title={box.title} items={box.items} />
               ))}
             </section>
-          )}
-
-          {(intro.length > 0 || acquisition.length > 0 || management.length > 0) && (
-            <section className="job-section">
-              <h3>Job Description</h3>
-              {intro.map((p) => (
-                <p key={p.slice(0, 48)}>{p}</p>
-              ))}
-              <BulletList title="Project Acquisition" items={acquisition} />
-              <BulletList title="Project Management" items={management} />
-            </section>
-          )}
-
-          {(profile.length > 0 || offer.length > 0) && (
-            <section className="job-section">
-              <h3>Candidate&rsquo;s Profile</h3>
-              <BulletList title="Your profile" items={profile} />
-              <BulletList title="What we offer" items={offer} />
-            </section>
-          )}
+          ))}
 
           <p className="job-card__actions">
             <Link to={`/jobs/${job.id}/apply`} className="btn btn--primary">

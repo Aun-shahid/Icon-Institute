@@ -2619,9 +2619,82 @@ code {
   margin-right: 0.35rem;
 }
 
-/* Job ad sections: Background / Job Description / Candidate's Profile */
+/* Job ad sections (each vacancy's own, in the administrator's order) */
 .job-section {
   margin-top: 2.25rem;
+}
+
+.job-section__subtitle {
+  margin-top: -0.25rem;
+  font-weight: 600;
+  color: hsl(var(--primary));
+}
+
+/* CMS: flexible job-ad sections editor */
+.job-sections-editor {
+  display: grid;
+  gap: 1rem;
+}
+
+.jse-section {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 1rem 1.1rem 1.15rem;
+  border: 1px solid hsl(0 0% 86%);
+  border-radius: var(--radius);
+  background: #fff;
+}
+
+.jse-section > legend {
+  padding: 0 0.4rem;
+  font-weight: 700;
+}
+
+.jse-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.jse-box {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0.85rem;
+  border-left: 3px solid hsl(var(--primary) / 0.5);
+  border-radius: var(--radius);
+  background: hsl(0 0% 97%);
+}
+
+.jse-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.jse-toolbar strong {
+  margin-right: auto;
+}
+
+.jse-section > .jse-toolbar {
+  justify-content: flex-end;
+}
+
+.jse-empty {
+  padding: 1rem;
+  border: 1px dashed hsl(0 0% 80%);
+  border-radius: var(--radius);
+}
+
+.jse-add-section {
+  justify-self: start;
+}
+
+@media (max-width: 640px) {
+  .jse-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .job-section h4 {
